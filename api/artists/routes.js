@@ -1,16 +1,16 @@
-const controllers = require('./controllers.js');
-const express = require('express');
+const controllers = require("./controllers.js");
+const express = require("express");
 
 const router = express.Router();
 
-router.get('/', controllers.getAll);
+router.get("/", controllers.getAll);
 
-router.get('/:id', controllers.getOne);
+router.get("/:artistId", controllers.getOne);
 
-router.post('/', controllers.create);
+router.post("/", controllers.create);
 
-router.put('/:id', controllers.update);
+router.put("/:artistId", controllers.update);
 
-router.delete('/:id', controllers.delete);
+router.delete("/:artistId", controllers.delete);
 
 module.exports = router;

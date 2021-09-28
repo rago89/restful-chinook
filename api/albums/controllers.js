@@ -5,30 +5,33 @@ const controllers = {
     const sql = `SELECT * FROM albums`;
     db.all(sql, (err, rows) => {
       if (err) {
-        res.status(400).json({ error: err.message });
+        res.status(400).json({ error: err.message, stack: err.stack });
         return;
       }
-
       res.json(rows);
     });
   },
   getOne: (req, res) => {
-    const { albumId } = req.params;
-    const sql = `SELECT * FROM albums WHERE albums.AlbumId = ${albumId}`;
-    db.get(sql, (err, row) => {
-      if (err) {
-        res.status(400).json({ error: err.message });
-        return;
-      }
-      if (row === undefined) {
-        res
-          .status(401)
-          .json({ message: `album with the given id doesn't exist` });
-        return;
-      }
+    try {
+      const { albumId } = req.params;
+      const sql = `SELECT * FROM albums WHERE albums.AlbumId = ${albumId}`;
+      db.get(sql, (err, row) => {
+        if (err) {
+          res.status(400).json({ error: err.message, stack: err.stack });
+          return;
+        }
+        if (!row) {
+          res
+            .status(401)
+            .json({ message: `album with the given id doesn't exist` });
+          return;
+        }
 
-      res.json(row);
-    });
+        res.json(row);
+      });
+    } catch (err) {
+      res.status(400).json({ error: err.message, stack: err.stack });
+    }
   },
 
   create: async (req, res) => {
@@ -36,7 +39,7 @@ const controllers = {
     const countAlbumsSql = `SELECT COUNT(*) FROM albums`;
     db.all(countAlbumsSql, async (err, row) => {
       if (err) {
-        res.status(400).json({ error: err.message });
+        res.status(400).json({ error: err.message, stack: err.stack });
         return;
       }
 
@@ -58,11 +61,11 @@ const controllers = {
       const queryIdString = `SELECT * FROM albums WHERE albums.AlbumId = ${albumId}`;
       db.get(queryIdString, (err, row) => {
         if (err) {
-          res.status(400).json({ error: err.message });
+          res.status(400).json({ error: err.message, stack: err.stack });
           return;
         }
 
-        if (row === undefined) {
+        if (!row) {
           res.status(401).send(`Cannot update album, id doesn't exist`);
           return;
         }
@@ -74,14 +77,14 @@ const controllers = {
 
         db.all(sql, async (err, rows) => {
           if (err) {
-            res.status(400).json({ error: err.message });
+            res.status(400).json({ error: err.message, stack: err.stack });
             return;
           }
           await res.send(`album with id: ${id} successfully updated`);
         });
       });
     } catch (err) {
-      res.status(401).json({ error: err.message });
+      res.status(401).json({ error: err.message, stack: err.stack });
     }
   },
 
@@ -92,10 +95,10 @@ const controllers = {
 
       db.get(queryIdString, async (err, row) => {
         if (err) {
-          res.status(400).json({ error: err.message });
+          res.status(400).json({ error: err.message, stack: err.stack });
           return;
         }
-        if (row === undefined) {
+        if (!row) {
           await res.status(400).send("Cannot delete album id doesn't exist");
           return;
         }
@@ -105,7 +108,7 @@ const controllers = {
         const sql = `DELETE FROM albums WHERE AlbumId ='${albumId}'`;
         db.all(sql, async (err, row) => {
           if (err) {
-            res.status(400).json({ error: err.message });
+            res.status(400).json({ error: err.message, stack: err.stack });
             return;
           }
           await res
@@ -114,7 +117,7 @@ const controllers = {
         });
       });
     } catch (err) {
-      res.status(400).json({ error: err.message });
+      res.status(400).json({ error: err.message, stack: err.stack });
     }
   },
 };
